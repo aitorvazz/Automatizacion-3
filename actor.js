@@ -2,6 +2,14 @@ const Apify = require('apify');  // Asegúrate de que estás importando Apify co
 const { chromium } = require('playwright');  // Usamos Playwright para controlar el navegador
 
 (async () => {
+    // Verificar si Chromium se ha instalado correctamente
+    try {
+        const browser = await chromium.launch();  // Verifica si Chromium está disponible
+        console.log("Chromium se ha instalado correctamente");
+    } catch (error) {
+        console.error("Error al intentar lanzar Chromium", error);
+    }
+
     const browser = await chromium.launch();  // Lanzamos Chromium
     const page = await browser.newPage();  // Creamos una nueva página
 
@@ -11,8 +19,6 @@ const { chromium } = require('playwright');  // Usamos Playwright para controlar
     // Aplicamos los filtros
     await page.selectOption('select[name="tipoContrato"]', { label: 'Suministros' });  // Seleccionamos 'Suministros'
     await page.selectOption('select[name="estadoTramite"]', { label: 'Abierto' });  // Seleccionamos 'Abierto'
-    
-    // Hacemos clic en el botón de buscar
     await page.click('button#btnBuscar');
     await page.waitForSelector('div.paginacion');  // Esperamos que aparezca la paginación
 
