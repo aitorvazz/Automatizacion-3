@@ -1,24 +1,24 @@
 const Apify = require('apify');  // Asegúrate de que estás importando Apify correctamente
-const { chromium } = require('playwright');  // Usamos Playwright para controlar el navegador
+const puppeteer = require('puppeteer');  // Usamos Puppeteer para controlar el navegador
 
 (async () => {
-    // Verificar si Chromium se ha instalado correctamente
+    // Verificar si Puppeteer se ha instalado correctamente
     try {
-        const browser = await chromium.launch();  // Verifica si Chromium está disponible
+        const browser = await puppeteer.launch();  // Lanza Chromium con Puppeteer
         console.log("Chromium se ha instalado correctamente");
     } catch (error) {
         console.error("Error al intentar lanzar Chromium", error);
     }
 
-    const browser = await chromium.launch();  // Lanzamos Chromium
+    const browser = await puppeteer.launch({ headless: true });  // Lanzamos Chromium
     const page = await browser.newPage();  // Creamos una nueva página
 
     // Accedemos a la URL
     await page.goto('https://www.contratacion.euskadi.eus/webkpe00-kpeperfi/es/ac70cPublicidadWar/busquedaAnuncios?locale=es');
 
     // Aplicamos los filtros
-    await page.selectOption('select[name="tipoContrato"]', { label: 'Suministros' });  // Seleccionamos 'Suministros'
-    await page.selectOption('select[name="estadoTramite"]', { label: 'Abierto' });  // Seleccionamos 'Abierto'
+    await page.select('select[name="tipoContrato"]', 'Suministros');  // Seleccionamos 'Suministros'
+    await page.select('select[name="estadoTramite"]', 'Abierto');  // Seleccionamos 'Abierto'
     await page.click('button#btnBuscar');
     await page.waitForSelector('div.paginacion');  // Esperamos que aparezca la paginación
 
@@ -34,7 +34,8 @@ const { chromium } = require('playwright');  // Usamos Playwright para controlar
         await page.waitForSelector('.resultadoItem');
         
         // Extraemos la información de los elementos en la página
-        const pageItems = await page.$$eval('.resultadoItem', (items) => {
+        const pageItems = await page.evaluate(() => {
+            const items = Array.from(document.querySelectorAll('.resultadoItem'));
             return items.map(item => {
                 const title = item.querySelector('h2')?.innerText;
                 const date = item.querySelector('.fecha')?.innerText;
