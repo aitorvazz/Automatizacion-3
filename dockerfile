@@ -3,6 +3,9 @@ FROM apify/actor-node:20
 # Copia los archivos del repositorio al contenedor
 COPY . /usr/src/app
 
+RUN rm -rf /root/.cache/puppeteer && npx puppeteer install
+# Elimina la cache de pupetteer
+
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
