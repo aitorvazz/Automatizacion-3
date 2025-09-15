@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "apify": "^3.0.0",
-    "puppeteer": "^22.0.0"  // Solo Puppeteer, no Playwright
+    "puppeteer": "^22.0.0"
   },
   "devDependencies": {},
   "author": "",
