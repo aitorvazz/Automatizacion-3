@@ -9,8 +9,8 @@ WORKDIR /usr/src/app
 # Instala las dependencias
 RUN npm install --quiet --only=prod --no-optional
 
-# Elimina la caché de Playwright y fuerza una nueva instalación de los navegadores y dependencias
-RUN rm -rf /root/.cache/ms-playwright && npx playwright install --with-deps
+# Instala Puppeteer y sus dependencias
+RUN npm install puppeteer --quiet
 
 # Añadir etiqueta de versión (opcional)
 LABEL com.apify.actBuildId=WGm0HzslyyPLJ1lYW
