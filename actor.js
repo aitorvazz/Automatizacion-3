@@ -1,41 +1,33 @@
-const Apify = require('apify');  // Importamos la librería de Apify
+const Apify = require('apify');  // Asegúrate de que estás importando Apify correctamente
 const puppeteer = require('puppeteer');  // Usamos Puppeteer para controlar el navegador
 
 (async () => {
-    // Verificar si Puppeteer se ha instalado correctamente
-    try {
-        const browser = await puppeteer.launch();  // Lanza Chromium con Puppeteer
-        console.log("Chromium se ha instalado correctamente");
-    } catch (error) {
-        console.error("Error al intentar lanzar Chromium", error);
-    }
-
-    const browser = await puppeteer.launch({ headless: true });  // Lanzamos Chromium en modo headless
+    // Lanzamos Chromium en modo headless
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();  // Creamos una nueva página
 
-    // Accedemos a la URL
+    // Accedemos a la URL de la contratación pública de Euskadi
     await page.goto('https://www.contratacion.euskadi.eus/webkpe00-kpeperfi/es/ac70cPublicidadWar/busquedaAnuncios?locale=es');
 
-    // Aplicamos los filtros de la búsqueda
-    await page.select('select[name="tipoContrato"]', 'Suministros');  // Seleccionamos 'Suministros'
-    await page.select('select[name="estadoTramite"]', 'Abierto');  // Seleccionamos 'Abierto'
-    await page.click('button#btnBuscar');  // Hacemos clic en el botón de buscar
+    // Aplicamos los filtros de la búsqueda (tipo de contrato: Suministros, estado: Abierto)
+    await page.select('select[name="tipoContrato"]', 'Suministros');  
+    await page.select('select[name="estadoTramite"]', 'Abierto');
+    await page.click('button#btnBuscar');  // Hacemos clic en el botón de búsqueda
 
-    // Esperamos que se cargue la paginación
+    // Esperamos que los resultados de la búsqueda se carguen
     await page.waitForSelector('div.paginacion');  
 
     let items = [];  // Arreglo para almacenar los resultados extraídos
-
-    let pageNumber = 1;  // Empezamos con la página 1
-    let nextButtonExists = true;  // Indicamos si hay una siguiente página
+    let pageNumber = 1;
+    let nextButtonExists = true;
 
     // Bucle para recorrer las páginas de resultados
     while (nextButtonExists) {
         console.log(`Extrayendo datos de la página ${pageNumber}`);
         
         await page.waitForSelector('.resultadoItem');  // Esperamos que los elementos estén presentes
-        
-        // Extraemos los datos de los anuncios en la página
+
+        // Extraemos los datos de los anuncios
         const pageItems = await page.evaluate(() => {
             const items = Array.from(document.querySelectorAll('.resultadoItem'));
             return items.map(item => {
