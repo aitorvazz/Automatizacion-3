@@ -3,45 +3,19 @@ FROM apify/actor-node:20
 # Copia los archivos del repositorio al contenedor
 COPY . /usr/src/app
 
-RUN rm -rf /root/.cache/puppeteer && npx puppeteer install
-# Elimina la cache de pupetteer
-
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Instala las dependencias del sistema necesarias para Chromium
-RUN apt-get update && apt-get install -y \
-    wget \
-    ca-certificates \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
+# Instala Puppeteer y las dependencias del sistema necesarias para Chromium
+RUN npm install puppeteer --quiet
+
+# Instala las dependencias del sistema para ejecutar Chromium en contenedor
+RUN apk update && apk add --no-cache \
     libx11-xcb1 \
     libxcomposite1 \
     libxrandr2 \
     xdg-utils \
-    libu2f-udev \
-    libgbm1 \
-    --no-install-recommends
-
-# Instala las dependencias de Node.js
-RUN npm install --quiet --only=prod --no-optional
-
-# Instala Puppeteer
-RUN npm install puppeteer --quiet
-
-# Instala los navegadores de Puppeteer
-RUN npx puppeteer install
-
-# Añadir etiqueta de versión (opcional)
-LABEL com.apify.actBuildId=WGm0HzslyyPLJ1lYW
+    libgbm1
 
 # Expone el puerto que utiliza Apify (si es necesario)
 EXPOSE 8080
