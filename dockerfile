@@ -6,11 +6,11 @@ COPY . /usr/src/app
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Instala las dependencias definidas en package.json
+# Instala las dependencias
 RUN npm install --quiet --only=prod --no-optional
 
-# Instala los navegadores de Playwright
-RUN npx playwright install
+# Elimina la caché de Playwright y fuerza una nueva instalación de los navegadores y dependencias
+RUN rm -rf /root/.cache/ms-playwright && npx playwright install --with-deps
 
 # Añadir etiqueta de versión (opcional)
 LABEL com.apify.actBuildId=WGm0HzslyyPLJ1lYW
