@@ -10,6 +10,4 @@ RUN npm install --quiet --only=prod --no-optional
 RUN npx playwright install
 
 # Añadir los archivos y crear la imagen
-RUN npm run build
-
 LABEL com.apify.actBuildId=WGm0HzslyyPLJ1lYW
