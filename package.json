@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "apify": "^3.0.0",
-    "puppeteer": "^22.0.0"  // Versión más reciente de Puppeteer
+    "puppeteer": "^22.0.0"
   },
   "devDependencies": {},
   "author": "",
