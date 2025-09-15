@@ -1,20 +1,20 @@
-const { Apify } = require('apify');
-const { chromium } = require('playwright');
+const Apify = require('apify'); // Asegúrate de que Apify esté correctamente importado
+const { chromium } = require('playwright'); // Usamos Playwright para controlar el navegador
 
-Apify.main(async () => {
-    const browser = await chromium.launch(); // Lanza el navegador Chromium
-    const page = await browser.newPage(); // Crea una nueva página en el navegador
+(async () => {
+    const browser = await chromium.launch(); // Lanzamos Chromium
+    const page = await browser.newPage(); // Creamos una nueva página
 
-    // Accede a la URL
+    // Accedemos a la URL
     await page.goto('https://www.contratacion.euskadi.eus/webkpe00-kpeperfi/es/ac70cPublicidadWar/busquedaAnuncios?locale=es');
 
-    // Aplica los filtros
-    await page.selectOption('select[name="tipoContrato"]', { label: 'Suministros' }); // Selecciona 'Suministros'
-    await page.selectOption('select[name="estadoTramite"]', { label: 'Abierto' }); // Selecciona 'Abierto'
+    // Aplicamos los filtros
+    await page.selectOption('select[name="tipoContrato"]', { label: 'Suministros' }); // Seleccionamos 'Suministros'
+    await page.selectOption('select[name="estadoTramite"]', { label: 'Abierto' }); // Seleccionamos 'Abierto'
     
-    // Haz click en el botón de buscar
+    // Hacemos clic en el botón de buscar
     await page.click('button#btnBuscar');
-    await page.waitForSelector('div.paginacion'); // Espera que aparezca la paginación
+    await page.waitForSelector('div.paginacion'); // Esperamos que aparezca la paginación
 
     let items = []; // Arreglo para almacenar los datos extraídos
 
@@ -25,10 +25,10 @@ Apify.main(async () => {
     while (nextButtonExists) {
         console.log(`Extrayendo datos de la página ${pageNumber}`);
         
-        // Espera a que los elementos de la página se carguen
+        // Esperamos a que los elementos de la página se carguen
         await page.waitForSelector('.resultadoItem');
         
-        // Extrae la información de los elementos en la página
+        // Extraemos la información de los elementos en la página
         const pageItems = await page.$$eval('.resultadoItem', (items) => {
             return items.map(item => {
                 const title = item.querySelector('h2')?.innerText;
@@ -38,7 +38,7 @@ Apify.main(async () => {
             });
         });
         
-        // Agrega los elementos extraídos a la lista principal
+        // Agregamos los elementos extraídos a la lista principal
         items = [...items, ...pageItems];
 
         // Revisa si hay una siguiente página
@@ -53,12 +53,11 @@ Apify.main(async () => {
         }
     }
 
-    // Guarda los resultados en formato JSON
+    // Guardamos los resultados en formato JSON
     await Apify.setValue('RESULTADOS', items);
 
     console.log(`Se extrajeron ${items.length} elementos.`);
     
-    // Cierra el navegador
+    // Cerramos el navegador
     await browser.close();
-});
-
+})();
