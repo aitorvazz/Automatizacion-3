@@ -6,8 +6,8 @@ COPY . /usr/src/app
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Elimina cualquier caché de Puppeteer y asegura que Puppeteer descargue el navegador
-RUN rm -rf /root/.cache/puppeteer && npx puppeteer install
+# Instala Puppeteer y las dependencias necesarias para Chromium
+RUN npm install puppeteer --quiet
 
 # Instala las dependencias necesarias para Chromium en Alpine
 RUN apk update && apk add --no-cache \
@@ -31,8 +31,8 @@ RUN apk update && apk add --no-cache \
     libgbm \
     --no-install-recommends
 
-# Instala Puppeteer
-RUN npm install puppeteer --quiet
+# Fuerza la instalación de Chromium
+RUN npx puppeteer install
 
 # Añadir etiqueta de versión (opcional)
 LABEL com.apify.actBuildId=WGm0HzslyyPLJ1lYW
