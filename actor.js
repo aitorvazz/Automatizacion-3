@@ -1,22 +1,22 @@
-const Apify = require('apify'); // Asegúrate de que Apify esté correctamente importado
-const { chromium } = require('playwright'); // Usamos Playwright para controlar el navegador
+const Apify = require('apify');  // Asegúrate de que estás importando Apify correctamente
+const { chromium } = require('playwright');  // Usamos Playwright para controlar el navegador
 
 (async () => {
-    const browser = await chromium.launch(); // Lanzamos Chromium
-    const page = await browser.newPage(); // Creamos una nueva página
+    const browser = await chromium.launch();  // Lanzamos Chromium
+    const page = await browser.newPage();  // Creamos una nueva página
 
     // Accedemos a la URL
     await page.goto('https://www.contratacion.euskadi.eus/webkpe00-kpeperfi/es/ac70cPublicidadWar/busquedaAnuncios?locale=es');
 
     // Aplicamos los filtros
-    await page.selectOption('select[name="tipoContrato"]', { label: 'Suministros' }); // Seleccionamos 'Suministros'
-    await page.selectOption('select[name="estadoTramite"]', { label: 'Abierto' }); // Seleccionamos 'Abierto'
+    await page.selectOption('select[name="tipoContrato"]', { label: 'Suministros' });  // Seleccionamos 'Suministros'
+    await page.selectOption('select[name="estadoTramite"]', { label: 'Abierto' });  // Seleccionamos 'Abierto'
     
     // Hacemos clic en el botón de buscar
     await page.click('button#btnBuscar');
-    await page.waitForSelector('div.paginacion'); // Esperamos que aparezca la paginación
+    await page.waitForSelector('div.paginacion');  // Esperamos que aparezca la paginación
 
-    let items = []; // Arreglo para almacenar los datos extraídos
+    let items = [];  // Arreglo para almacenar los datos extraídos
 
     // Bucle para recorrer las páginas
     let pageNumber = 1;
@@ -25,7 +25,6 @@ const { chromium } = require('playwright'); // Usamos Playwright para controlar 
     while (nextButtonExists) {
         console.log(`Extrayendo datos de la página ${pageNumber}`);
         
-        // Esperamos a que los elementos de la página se carguen
         await page.waitForSelector('.resultadoItem');
         
         // Extraemos la información de los elementos en la página
@@ -37,18 +36,14 @@ const { chromium } = require('playwright'); // Usamos Playwright para controlar 
                 return { title, date, link };
             });
         });
-        
-        // Agregamos los elementos extraídos a la lista principal
+
         items = [...items, ...pageItems];
 
-        // Revisa si hay una siguiente página
         const nextButton = await page.$('a[aria-label="Siguiente"]');
         if (nextButton) {
-            // Si existe, pasa a la siguiente página
             await nextButton.click();
             pageNumber++;
         } else {
-            // Si no existe, termina el bucle
             nextButtonExists = false;
         }
     }
@@ -58,6 +53,5 @@ const { chromium } = require('playwright'); // Usamos Playwright para controlar 
 
     console.log(`Se extrajeron ${items.length} elementos.`);
     
-    // Cerramos el navegador
-    await browser.close();
+    await browser.close();  // Cierra el navegador
 })();
